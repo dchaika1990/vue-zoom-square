@@ -1,0 +1,44 @@
+/* forms */
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="number"],
+textarea,
+select{
+   border: none;
+   border-bottom: 1px solid $borderColor;
+   background-color: transparent;
+   border-radius: 0;
+   color: $fontHeaders;
+   font-size: 16px;
+   width: 100%;
+   min-height: 29px;
+}
+
+
+input[disabled] {
+   opacity: .4;
+   cursor: not-allowed;
+}
+
+input[type="submit"],
+button {
+   cursor: pointer;
+}
+
+textarea,
+textarea.form-control {
+   height: auto;
+}
+
+/* select styling */
+select[multiple] {
+   height: auto;
+}
+
+.form-group:not(:last-child){
+   margin-bottom: 20px;
+}

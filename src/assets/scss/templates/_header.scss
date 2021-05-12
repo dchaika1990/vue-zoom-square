@@ -1,0 +1,46 @@
+/*
+* Header Styles
+*/
+.page_header_wrap{
+   box-shadow: 0 1px 12px 2px $borderColor;
+}
+.page_header{
+   z-index: 1;
+   font-family: $fontHeaders;
+   min-height: 78px;
+   box-shadow: 0 2px 8px 1px $colorDark;
+   .logo{
+      font-size: 45px;
+      letter-spacing: 1px;
+      color: $colorMain;
+      text-transform: uppercase;
+      &:hover{
+         color: $fontColor;
+      }
+   }
+   &.fix-header{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+   }
+   .nav{
+      font-size: 20px;
+      letter-spacing: 1px;
+      &-item{
+         list-style: none;
+         .active{
+            color: $colorMain;
+         }
+      }
+      &-menu{
+         text-transform: uppercase;
+         display: flex;
+         justify-content: flex-end;
+         li:not(:last-child){
+            margin-right: 20px;
+         }
+      }
+   }
+
+}

@@ -1,0 +1,31 @@
+.modal {
+   z-index: 20;
+   position: fixed;
+   left: 0;
+   right: 0;
+   top: 0;
+   bottom: 0;
+   background-color: rgba(0, 0, 0, .5);
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   &-wrap {
+      max-width: 300px;
+      width: 100%;
+      background-color: $lightColor;
+      border-radius: 3px;
+      padding: 30px;
+   }
+
+   &-title {
+      padding-bottom: 30px;
+      border-bottom: 1px solid $borderColor;
+   }
+
+   &-btns{
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+   }
+}
