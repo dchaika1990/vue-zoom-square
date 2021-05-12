@@ -7,16 +7,15 @@
 </template>
 
 <script>
-import {ZoomMtg} from "@zoomus/websdk";
 import crypto from "crypto"
 import {setCookie} from "../utils/cookie";
 
 export default {
 	name: "Zoom",
 	created() {
-		ZoomMtg.setZoomJSLib('https://source.zoom.us/1.9.1/lib', '/av');
-		ZoomMtg.preLoadWasm();
-		ZoomMtg.prepareJssdk();
+		this.ZoomMtg.setZoomJSLib('https://source.zoom.us/1.9.1/lib', '/av');
+		this.ZoomMtg.preLoadWasm();
+		this.ZoomMtg.prepareJssdk();
 	},
 	data() {
 		return {
@@ -35,7 +34,7 @@ export default {
 	},
 	mounted() {
 
-		ZoomMtg.inMeetingServiceListener("onUserJoin", (data) => {
+		this.ZoomMtg.inMeetingServiceListener("onUserJoin", (data) => {
 			console.log("inMeetingServiceListener onUserJoin", data);
 			this.refundBtnIsActive = true
 			// this.refund = false
@@ -45,15 +44,15 @@ export default {
 			}, 10000)
 		});
 
-		ZoomMtg.inMeetingServiceListener('onUserLeave', function (data) {
+		this.ZoomMtg.inMeetingServiceListener('onUserLeave', function (data) {
 			console.log('inMeetingServiceListener onUserLeave', data);
 		});
 
-		ZoomMtg.inMeetingServiceListener('onUserIsInWaitingRoom', function (data) {
+		this.ZoomMtg.inMeetingServiceListener('onUserIsInWaitingRoom', function (data) {
 			console.log('inMeetingServiceListener onUserIsInWaitingRoom', data);
 		});
 
-		ZoomMtg.inMeetingServiceListener('onMeetingStatus', function (data) {
+		this.ZoomMtg.inMeetingServiceListener('onMeetingStatus', function (data) {
 			console.log('inMeetingServiceListener onMeetingStatus', data);
 		});
 	},
@@ -61,7 +60,7 @@ export default {
 		leaveMeetingCustom ()  {
 			console.log('setCookie');
 			setCookie('refund', 'true', {secure: true, 'max-age': 3600});
-			ZoomMtg.leaveMeeting({
+			this.ZoomMtg.leaveMeeting({
 				success: () => {
 					console.log('Refund Now')
 				},
@@ -79,13 +78,13 @@ export default {
 		initMeeting() {
 			document.getElementById("zmmtg-root").style.display = "block";
 			this.generateSignature(this.apiKey, this.apiSecret, this.meetingNumber, this.role);
-			ZoomMtg.init({
+			this.ZoomMtg.init({
 				leaveUrl: this.leaveUrl,
 				isSupportAV: true,
 				success: (success) => {
 					console.log(success)
 
-					ZoomMtg.join({
+					this.ZoomMtg.join({
 						signature: this.signature,
 						meetingNumber: this.meetingNumber,
 						userName: this.userName,
