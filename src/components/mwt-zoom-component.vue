@@ -9,6 +9,7 @@
 <script>
 import {ZoomMtg} from "@zoomus/websdk";
 import crypto from "crypto"
+import {setCookie} from "../utils/cookie";
 
 export default {
 	name: "Zoom",
@@ -24,7 +25,7 @@ export default {
 			apiSecret: 'rlwzMPUmsSDjHxQWGtbxKOMiiaXDGMFd8EIn',
 			meetingNumber: 84511986216,
 			role: 0,
-			leaveUrl: 'http://localhost:8080/refund', // our redirect url
+			leaveUrl: '/thanks', // our redirect url
 			userName: 'WebSDK',
 			userEmail: 'admin@test.com',
 			passWord: '48G9Yh',
@@ -41,7 +42,6 @@ export default {
 			console.log(this.leaveUrl)
 			setTimeout(() => {
 				this.refundBtnIsActive = false
-
 			}, 10000)
 		});
 
@@ -59,10 +59,9 @@ export default {
 	},
 	methods: {
 		leaveMeetingCustom ()  {
-			console.log('click');
-
+			console.log('setCookie');
+			setCookie('refund', 'true', {secure: true, 'max-age': 3600});
 			ZoomMtg.leaveMeeting({
-				leaveUrl: 'http://localhost:8080/refund',
 				success: () => {
 					console.log('Refund Now')
 				},

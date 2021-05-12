@@ -10,9 +10,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/mwt-home-view')
   },
   {
-    path: '/refund',
+    path: '/thanks/refund',
     name: 'mwt-refund-view',
     component: () => import(/* webpackChunkName: "about" */ '../views/mwt-refund-view')
+  },
+  {
+    path: '/thanks',
+    name: 'mwt-thanks-view',
+    component: () => import(/* webpackChunkName: "about" */ '../views/mwt-thanks-view')
   }
 ]
 
