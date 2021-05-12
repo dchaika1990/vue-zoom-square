@@ -41,7 +41,7 @@ export default {
 			console.log(this.leaveUrl)
 			setTimeout(() => {
 				this.refundBtnIsActive = false
-			}, 10000)
+			}, 300000)
 		});
 
 		this.ZoomMtg.inMeetingServiceListener('onUserLeave', function (data) {
