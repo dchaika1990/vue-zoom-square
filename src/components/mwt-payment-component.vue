@@ -4,127 +4,141 @@
 		<h2>Make payment</h2>
 		<div class="d-flex justify-center">
 			<button class="apple-pay-button apple-pay-button-black" id="sq-apple-pay">Apple pay</button>
-			<button id="sq-google-pay" class="button-google-pay"></button>
+			<!--			<button id="google-pay-button" class="button-google-pay"></button>-->
+			<form id="payment-form">
+				<div @click.prevent="handlePaymentMethodSubmission(googlePay)" id="google-pay-button"></div>
+			</form>
 		</div>
+		<div id="payment-status-container"></div>
 	</div>
 </template>
 
 <script>
+import { Client, Environment } from 'square'
+import {v4 as uuidv4} from 'uuid'
+import {setCookie} from "../utils/cookie";
+
 export default {
 	name: "mwt-payment-component",
 	props: ['isAnimate'],
-	mounted() {
-
-		let self = this;
-		// eslint-disable-next-line no-undef
-		const paymentForm = new SqPaymentForm({
-			applicationId: "sandbox-sq0idb-OEOULEFxEaBE8q7TUK7sXQ",
+	data() {
+		return {
+			client: new Client({
+				environment: Environment.Sandbox,
+				accessToken: 'EAAAEH65cVQ-3F6P7DzehLoFpo7FccIHLIJvOJYzTxgsOWga-_m2NDCdxon39InK',
+			}),
+			googlePay: '',
+			appId: "sandbox-sq0idb-OEOULEFxEaBE8q7TUK7sXQ",
 			locationId: "L09EM49DPWYDN",
+			token: ''
+		}
+	},
+	methods: {
+		async handlePaymentMethodSubmission(paymentMethod) {
+			try {
+				// cardButton.disabled = true;
+				this.token = await this.tokenize(paymentMethod);
+				setCookie('tokenKey', this.token,{secure: true, 'max-age': 3600})
+				this.$emit('payTrue')
+				// console.log(tokenResult)
+				// const paymentResults = await this.createPayment(token);
+				//
+				// this.displayPaymentResults('SUCCESS');
+				// console.debug('Payment Success', paymentResults);
 
-			// Initialize Web Apple Pay placeholder ID
-			applePay: {
-				elementId: 'sq-apple-pay'
-			},
-			// Initialize Google Pay button ID
-			googlePay: {
-				elementId: 'sq-google-pay'
-			},
-
-			callbacks: {
-				cardNonceResponseReceived: function (errors) {
-					if (errors) {
-						// Log errors from nonce generation to the browser developer console.
-						console.error('Encountered errors:');
-						errors.forEach(function (error) {
-							console.error('  ' + error.message);
-						});
-						alert('Encountered errors, check browser developer console for more details');
-						return;
-					}
-					//TODO: Replace alert with code in step 2.1
-					self.$emit('payTrue')
-				},
-				methodsSupported: function (methods, unsupportedReason) {
-					console.log(methods);
-
-					var applePayBtn = document.getElementById('sq-apple-pay');
-					// Only show the button if Apple Pay on the Web is enabled
-					// Otherwise, display the wallet not enabled message.
-					if (methods.applePay === true) {
-						applePayBtn.style.display = 'inline-block';
-					} else {
-						console.log(unsupportedReason);
-					}
-
-					var googlePayBtn = document.getElementById('sq-google-pay');
-
-					// Only show the button if Google Pay on the Web is enabled
-					if (methods.googlePay === true) {
-						googlePayBtn.style.display = 'inline-block';
-					} else {
-						console.log(unsupportedReason);
-					}
-				},
-				/*
-				 * callback function: createPayment Request
-				 * Triggered when: a digital wallet payment button is clicked.
-				 * returns a PaymentRequestObject from your custom helper function
-				 */
-				createPaymentRequest: function () {
-					var paymentRequestJson = {
-						requestShippingAddress: true,
-						requestBillingInfo: true,
-						shippingContact: {
-							familyName: "CUSTOMER LAST NAME",
-							givenName: "CUSTOMER FIRST NAME",
-							email: "mycustomer@example.com",
-							country: "USA",
-							region: "CA",
-							city: "San Francisco",
-							addressLines: [
-								"1455 Market St #600"
-							],
-							postalCode: "94103",
-							phone: "14255551212"
-						},
-						currencyCode: "USD",
-						countryCode: "US",
-						total: {
-							label: "MERCHANT NAME",
-							amount: "0.01",
-							pending: false
-						},
-						lineItems: [
-							{
-								label: "Subtotal",
-								amount: "60.00",
-								pending: false
-							},
-							{
-								label: "Shipping",
-								amount: "19.50",
-								pending: true
-							},
-							{
-								label: "Tax",
-								amount: "5.50",
-								pending: false
-							}
-						],
-						shippingOptions: [
-							{
-								id: "1",
-								label: "SHIPPING LABEL",
-								amount: "SHIPPING COST"
-							}
-						]
-					};
-					return paymentRequestJson;
-				}
+			} catch (e) {
+				// cardButton.disabled = false;
+				this.displayPaymentResults('FAILURE');
+				console.error(e.message);
 			}
-		});
-		console.log(paymentForm)
-		paymentForm.build()
+		},
+		displayPaymentResults(status) {
+			const statusContainer = document.getElementById(
+				'payment-status-container'
+			);
+			if (status === 'SUCCESS') {
+				statusContainer.classList.remove('is-failure');
+				statusContainer.classList.add('is-success');
+			} else {
+				statusContainer.classList.remove('is-success');
+				statusContainer.classList.add('is-failure');
+			}
+
+			statusContainer.style.visibility = 'visible';
+		},
+		async tokenize(paymentMethod) {
+			console.log(paymentMethod)
+			const tokenResult = await paymentMethod.tokenize();
+			if (tokenResult.status === 'OK') {
+				return tokenResult.token;
+			} else {
+				let errorMessage = `Tokenization failed-status: ${tokenResult.status}`;
+				if (tokenResult.errors) {
+					errorMessage += ` and errors: ${JSON.stringify(
+						tokenResult.errors
+					)}`;
+				}
+				throw new Error(errorMessage);
+			}
+		},
+		async createPayment(token) {
+			const body = JSON.stringify({
+				applicationId: this.appId,
+				sourceId: token,
+				idempotencyKey: uuidv4(),
+				autocomplete: true,
+				customerId: this.appId,
+				locationId: this.locationId,
+				referenceId: '123456',
+			});
+
+			const paymentResponse = await fetch('/payment', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body,
+			});
+			if (paymentResponse.ok) {
+				return paymentResponse.json();
+			}
+			const errorBody = await paymentResponse.text();
+			throw new Error(errorBody);
+		}
+	},
+
+	async mounted() {
+		const payments = window.Square.payments(this.appId, this.locationId);
+		console.log(payments)
+		var buildPaymentRequest = (payments) => {
+			return payments.paymentRequest({
+				applicationId: this.appId,
+				locationId: this.locationId,
+				countryCode: 'US',
+				currencyCode: 'USD',
+				total: {
+					amount: '1',
+					label: 'Total',
+				},
+			});
+		}
+
+		try {
+			this.googlePay = await initializeGooglePay(payments);
+		} catch (e) {
+			console.error('Initializing Google Pay failed', e);
+		}
+
+		async function initializeGooglePay(payments) {
+			const paymentRequest = buildPaymentRequest(payments)
+
+			const googlePay = await payments.googlePay(paymentRequest);
+			await googlePay.attach('#google-pay-button');
+
+			return googlePay;
+		}
+
+
 	},
 }
 </script>
@@ -149,11 +163,11 @@ export default {
 	display: none;
 }
 
-.apple-pay-button{
+.apple-pay-button {
 	min-width: 200px;
-	min-height: 40px;
-	padding: 11px 24px;
-	margin: 10px;
+	height: 40px;
+	padding: 8px 20px;
+	margin-right: 10px;
 	background-color: #000;
 	background-origin: content-box;
 	background-position: center;

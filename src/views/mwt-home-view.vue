@@ -25,7 +25,6 @@ export default {
 	data(){
 		return {
 			isAnimate: false,
-			clickBuy: false,
 			payment: false,
 		}
 	},
@@ -40,12 +39,8 @@ export default {
 		}, 5000)
 	},
 	methods: {
-		clickPay(){
-			this.clickBuy = !this.clickBuy;
-		},
 		payHandler(){
 			this.payment = true
-			this.clickBuy = false
 		}
 	},
 }

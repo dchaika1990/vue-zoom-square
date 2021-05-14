@@ -17,6 +17,7 @@
     "querystring": "^0.2.1",
     "register-service-worker": "^1.7.2",
     "square": "^11.0.0",
+    "uuid": "^8.3.2",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuelidate": "^0.7.6"
