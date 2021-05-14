@@ -8,6 +8,7 @@
 		<input
 			type="text"
 			placeholder="Name"
+			name="name"
 			v-model.trim="name"
 			:class="{invalid: $v.name.$dirty && !$v.name.required }"
 		>
@@ -21,6 +22,7 @@
 	  <div class="form-group">
 		<input
 			type="email"
+			name="email"
 			placeholder="email"
 			v-model.trim="email"
 			:class="{invalid: ($v.email.$dirty && !$v.email.required) || ($v.email.$dirty && !$v.email.email) }"
@@ -39,11 +41,12 @@
 		</small>
 	  </div>
 	  <div class="form-group">
-				<textarea
-					placeholder="What is the reason?"
-					v-model.trim="message"
-					:class="{invalid: ($v.message.$dirty && !$v.message.required) || ($v.message.$dirty && !$v.message.minLength) }"
-				></textarea>
+		  <textarea
+			  name="message"
+			  placeholder="What is the reason?"
+			  v-model.trim="message"
+			  :class="{invalid: ($v.message.$dirty && !$v.message.required) || ($v.message.$dirty && !$v.message.minLength) }"
+		  ></textarea>
 		<small
 			class="helper-text invalid"
 			v-if="$v.message.$dirty && !$v.message.required"
@@ -72,6 +75,7 @@
 <script>
 import Notice from '../components/mwt-notice-component'
 import {email, required, minLength} from 'vuelidate/lib/validators'
+import emailjs from 'emailjs-com';
 // import axios from 'axios'
 // import querystring from 'querystring'
 
@@ -92,34 +96,31 @@ export default {
 	message: {required, minLength: minLength(8)},
   },
   methods: {
-	async SendMessage() {
+	SendMessage(e) {
 	  if (this.$v.$invalid) {
 		this.$v.$touch()
 		return
 	  }
 
-	  let form = {
-		name: this.name,
-		email: this.email,
-		message: this.message,
-	  }
-
 	  try {
+		emailjs.sendForm('service_41vyjcn', 'template_r9b3twv', e.target, 'user_cCzdvyiYKhQgJPyOFrBoQ', {
+		  name: this.name,
+		  email: this.email,
+		  message: this.message
+		})
+
+		this.name = '';
+		this.email = '';
+		this.message = '';
+
 		this.isSubmit = true;
-		// axios
-		// 	.post(
-		// 		"./mail/index.php",
-		// 		querystring.stringify(this.form)
-		// 	)
-		// 	.then(res => {
-		// 	  console.log('send')
-		// 	});
 		setTimeout(() => {
 		  this.isSubmit = false;
 		  this.$router.push('/')
 		}, 5000)
-	  } catch (e) {
 
+	  } catch (error) {
+		console.log({error})
 	  }
 	}
   },
