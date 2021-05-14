@@ -16,6 +16,13 @@ select{
    font-size: 16px;
    width: 100%;
    min-height: 29px;
+   outline: none !important;
+   &.invalid{
+      border-color: red;
+   }
+   &:focus{
+      outline: none!important;
+   }
 }
 
 
