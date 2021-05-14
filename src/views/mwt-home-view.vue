@@ -4,9 +4,11 @@
 			@clickPay="clickPay"
 			v-if="!payment"
 		/>
-		<transition name="slide-fade">
-			<Payment v-if="isAnimate" @payTrue="payHandler"/>
-		</transition>
+		<template v-if="!payment">
+			<transition name="slide-fade" >
+				<Payment v-if="isAnimate" @payTrue="payHandler"/>
+			</transition>
+		</template>
 		<Zoom
 			v-if="payment"
 		/>

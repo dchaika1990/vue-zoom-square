@@ -12,9 +12,9 @@
 <script>
 export default {
 	name: "mwt-payment-component",
-
 	props: ['isAnimate'],
 	mounted() {
+
 		let self = this;
 		// eslint-disable-next-line no-undef
 		const paymentForm = new SqPaymentForm({
@@ -119,7 +119,6 @@ export default {
 							}
 						]
 					};
-
 					return paymentRequestJson;
 				}
 			}
