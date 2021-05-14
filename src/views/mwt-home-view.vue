@@ -2,12 +2,11 @@
 	<div>
 		<Home
 			@clickPay="clickPay"
-			v-if="!clickBuy && !payment"
+			v-if="!payment"
 		/>
-		<Payment
-			v-if="clickBuy"
-			@payTrue="payHandler"
-		/>
+		<transition name="slide-fade">
+			<Payment v-if="isAnimate" @payTrue="payHandler"/>
+		</transition>
 		<Zoom
 			v-if="payment"
 		/>
@@ -23,6 +22,7 @@ export default {
 	name: "mwt-home-view",
 	data(){
 		return {
+			isAnimate: false,
 			clickBuy: false,
 			payment: false,
 		}
@@ -31,6 +31,11 @@ export default {
 		Zoom,
 		Payment,
 		Home
+	},
+	mounted() {
+		setTimeout(()=> {
+			this.isAnimate = true;
+		}, 5000)
 	},
 	methods: {
 		clickPay(){

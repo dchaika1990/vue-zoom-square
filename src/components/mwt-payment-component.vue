@@ -1,5 +1,6 @@
 <template>
-	<div>
+	<div v-bind:class="{ active: '56' }">
+		<div class="divider-90"></div>
 		<h2>Make payment</h2>
 		<div class="d-flex justify-center">
 			<button class="apple-pay-button apple-pay-button-black" id="sq-apple-pay">Apple pay</button>
@@ -11,6 +12,8 @@
 <script>
 export default {
 	name: "mwt-payment-component",
+
+	props: ['isAnimate'],
 	mounted() {
 		let self = this;
 		// eslint-disable-next-line no-undef
